@@ -4,16 +4,18 @@ digraph arch {
     Parser -> Counter0 [label="pages"];
     Counter0 -> Parser [label="new request"];
     Counter0 -> Accumulator [label="results"];
-    Accumulator -> Parser [label="notify"];
+    Accumulator -> Parser [label="notify processed pages"];
 
     subgraph cluster_counter {
-        label="Counters";
+        label="CounterSupervisor";
         Counter0;
         Counter1;
-        Counter2 [label="..."];
+        CounterRest [label="..."];
+        CounterN;
     }
 
     edge [style="dashed"];
     Parser -> Counter1;
-    Parser -> Counter2;
+    Parser -> CounterRest;
+    Parser -> CounterN;
 }
