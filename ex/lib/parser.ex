@@ -13,9 +13,9 @@ defmodule Parser do
     :gen_server.start_link({:global, :wc_parser}, __MODULE__, filename, [])
   end
 
-  def request_page(wid) do
-    # A worker (Counter) send a request and its ID.
-    :gen_server.cast({:global, :wc_parser}, {:request_page, wid})
+  def request_page(pid) do
+    # A worker (Counter) send a request and its PID.
+    :gen_server.cast({:global, :wc_parser}, {:request_page, pid})
   end
 
   def processed(ref) do
@@ -31,9 +31,9 @@ defmodule Parser do
     {:ok, {Keyword.new, xml_parser}}
   end
 
-  def handle_cast({:request_page, wid}, {pending, xml_parser}) do
+  def handle_cast({:request_page, pid}, {pending, xml_parser}) do
     # Get the next available page from XML parser.
-    new_pending = deliver_page(wid, pending, Pages.next(xml_parser))
+    new_pending = deliver_page(pid, pending, Pages.next(xml_parser))
     {:noreply, {new_pending, xml_parser}}
   end
 
@@ -43,23 +43,23 @@ defmodule Parser do
     {:noreply, {new_pending, xml_parser}}
   end
 
-  defp deliver_page(wid, pending, page) when is_nil(page) do
+  defp deliver_page(pid, pending, page) when is_nil(page) do
     # `when' is a guard clause, which makes the function available only when the
     # value of the boolean expression is true.
     if Enum.empty?(pending) do
       pending # nop
     else
       {ref, prev_page} = List.last(pending)
-      Counter.deliver_page(wid, ref, prev_page)
+      Counter.deliver_page(pid, ref, prev_page)
       Keyword.put(Keyword.delete(pending, ref), ref, prev_page)
     end
   end
 
-  defp deliver_page(wid, pending, page) do
+  defp deliver_page(pid, pending, page) do
     # make_ref returns an *almost* unique reference, which might re-occur after
     # approximately 2 ** 82 calls.
     ref = make_ref()
-    Counter.deliver_page(wid, ref, page)
+    Counter.deliver_page(pid, ref, page)
     Keyword.put(pending, ref, page)
   end
 end
