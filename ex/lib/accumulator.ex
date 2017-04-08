@@ -5,7 +5,7 @@
 ##  processed_pages (a MapSet of the references of processed pages).
 
 defmodule Accumulator do
-  use GenServer.Behaviour
+  use GenServer
 
   def start_link do
     # Register a global name.
@@ -22,10 +22,10 @@ defmodule Accumulator do
       # If the page has been counted, no need to accumulate.
       {:noreply, {totals, processed_pages}}
     else
-      _totals = Map.merge(totals, counts, fn(_k, v1, v2) -> v1 + v2 end)
-      _processed_pages = MapSet.put(processed_pages, ref)
+      new_totals = Map.merge(totals, counts, fn(_k, v1, v2) -> v1 + v2 end)
+      new_processed_pages = MapSet.put(processed_pages, ref)
       Parser.processed(ref)
-      {:noreply, {_totals, _processed_pages}}
+      {:noreply, {new_totals, new_processed_pages}}
     end
   end
 end
@@ -36,7 +36,7 @@ end
 ##  Create and supervise multiple the Accumulator.
 
 defmodule AccumulatorSupervisor do
-  use Supervisor.Behaviour
+  use Supervisor
 
   def start_link do
     :supervisor.start_link(__MODULE__, []) 

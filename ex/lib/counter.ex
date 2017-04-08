@@ -5,7 +5,7 @@
 ##  references to Accumulator.
 
 defmodule Counter do
-  use GenServer.Behaviour
+  use GenServer
 
   def start_link do
     # Name, callback module, and callback arguments (4th argument omitted).
@@ -44,7 +44,7 @@ end
 ##  Create and supervise multiple Counters.
 
 defmodule CounterSupervisor do
-  use Supervisor.Behaviour
+  use Supervisor
 
   def start_link(num_counters) do
     # Callback module and callback argument.

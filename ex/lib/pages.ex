@@ -43,7 +43,7 @@ defmodule Pages do
   end
 
   defp event_fun({:characters, chars}, _, :text) do
-    {:ok, s} = String.from_char_list(chars)
+    {:ok, s} = to_string(chars)
     receive do
       {:get_next, from} -> send(from, {:next_page, s})
     end

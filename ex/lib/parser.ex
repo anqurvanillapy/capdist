@@ -7,7 +7,7 @@
 ##  dump).
 
 defmodule Parser do
-  use GenServer.Behaviour
+  use GenServer
 
   def start_link(filename) do
     :gen_server.start_link({:global, :wc_parser}, __MODULE__, filename, [])
@@ -33,17 +33,17 @@ defmodule Parser do
 
   def handle_cast({:request_page, wid}, {pending, xml_parser}) do
     # Get the next available page from XML parser.
-    _pending = deliver_page(wid, pending, Pages.next(xml_parser))
-    {:noreply, {_pending, xml_parser}}
+    new_pending = deliver_page(wid, pending, Pages.next(xml_parser))
+    {:noreply, {new_pending, xml_parser}}
   end
 
   def handle_cast({:processed, ref}, {pending, xml_parser}) do
     # Delete processed pages.
-    _pending = Keyword.delete(pending, ref)
-    {:noreply, {_pending, xml_parser}}
+    new_pending = Keyword.delete(pending, ref)
+    {:noreply, {new_pending, xml_parser}}
   end
 
-  defp deliver_page(wid, pending, page) when nil?(page) do
+  defp deliver_page(wid, pending, page) when is_nil(page) do
     # `when' is a guard clause, which makes the function available only when the
     # value of the boolean expression is true.
     if Enum.empty?(pending) do
@@ -70,7 +70,7 @@ end
 ##  Create and supervise multiple the Parser.
 
 defmodule ParserSupervisor do
-  use Supervisor.Behaviour
+  use Supervisor
 
   def start_link(filename) do
     :supervisor.start_link(__MODULE__, filename)

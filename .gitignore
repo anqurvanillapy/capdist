@@ -2,8 +2,8 @@
 
 #####=== Elixir ===#####
 
-/_build
-/deps
+_build
+deps
 erl_crash.dump
 *.ez
 
