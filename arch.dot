@@ -1,0 +1,19 @@
+digraph arch {
+    rankdir=RL;
+
+    Parser -> Counter0 [label="pages"];
+    Counter0 -> Parser [label="new request"];
+    Counter0 -> Accumulator [label="results"];
+    Accumulator -> Parser [label="notify"];
+
+    subgraph cluster_counter {
+        label="Counters";
+        Counter0;
+        Counter1;
+        Counter2 [label="..."];
+    }
+
+    edge [style="dashed"];
+    Parser -> Counter1;
+    Parser -> Counter2;
+}
