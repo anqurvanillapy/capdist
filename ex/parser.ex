@@ -65,7 +65,7 @@ defmodule Parser do
 end
 
 ##  ParserSupervisor
-##  =================
+##  ================
 ##
 ##  Create and supervise multiple the Parser.
 

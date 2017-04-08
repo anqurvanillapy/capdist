@@ -29,3 +29,21 @@ defmodule Accumulator do
     end
   end
 end
+
+##  AccumulatorSupervisor
+##  =====================
+##
+##  Create and supervise multiple the Accumulator.
+
+defmodule AccumulatorSupervisor do
+  use Supervisor.Behaviour
+
+  def start_link do
+    :supervisor.start_link(__MODULE__, []) 
+  end
+
+  def init(_args) do
+    workers = [worker(Accumulator, [])]
+    supervise(workers, strategy: :one_for_one)
+  end
+end

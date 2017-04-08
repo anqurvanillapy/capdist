@@ -1,21 +1,22 @@
 digraph arch {
-    rankdir=RL;
-
     Parser -> Counter0 [label="pages"];
     Counter0 -> Parser [label="new request"];
     Counter0 -> Accumulator [label="results"];
     Accumulator -> Parser [label="notify processed pages"];
 
+    subgraph cluster_accumulator {
+        label="AccumulatorSupervisor";
+        Accumulator;
+    }
+
+    subgraph cluster_parser {
+        label="ParserSupervisor";
+        Parser;
+    }
+
     subgraph cluster_counter {
         label="CounterSupervisor";
         Counter0;
-        Counter1;
-        CounterRest [label="..."];
-        CounterN;
+        CounterRest [label="Counter1...N"];
     }
-
-    edge [style="dashed"];
-    Parser -> Counter1;
-    Parser -> CounterRest;
-    Parser -> CounterN;
 }
